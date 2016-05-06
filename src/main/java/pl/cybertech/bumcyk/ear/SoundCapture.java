@@ -1,7 +1,5 @@
 package pl.cybertech.bumcyk.ear;
 
-import java.io.ByteArrayOutputStream;
-
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
@@ -33,7 +31,7 @@ public class SoundCapture {
         int channels = 1;
         boolean signed = true;
         boolean bigEndian = true;
-        AudioFormat format = new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);        
+        AudioFormat format = new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian); 
         return format;
     }
     

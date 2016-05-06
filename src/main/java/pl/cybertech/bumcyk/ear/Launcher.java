@@ -5,8 +5,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class Launcher {
    
+    @SuppressWarnings("resource")
     public static void main(String[] args) {
-        @SuppressWarnings("resource")
         ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
         EarService service = context.getBean(EarService.class);
         service.startHearing();                
