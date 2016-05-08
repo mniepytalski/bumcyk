@@ -3,15 +3,15 @@ package pl.cybertech.bumcyk.ear;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SoundRawData {
+public class SoundFFTData {
 
-    byte[] data;
+    double[] data;
 
-    public byte[] getData() {
+    public double[] getData() {
         return data;
     }
 
-    public void setData(byte[] data) {
+    public void setData(double[] data) {
         this.data = data;
     }
 }

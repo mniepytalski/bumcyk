@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import pl.cybertech.bumcyk.ear.signal.CalculateFFT;
+
 @Component
 public class SoundCapture {
 
@@ -18,6 +20,9 @@ public class SoundCapture {
 
     @Autowired
     private SoundRawData soundRawData;
+    
+    @Autowired
+    private SoundFFTData soundFFTData;    
     
     boolean stopped;
     
@@ -72,11 +77,14 @@ public class SoundCapture {
             // Save this chunk of data.
 //            out.write(data, 0, numBytesRead);
   
-             LOG.info(count + " data read: " + numBytesRead);
+//             LOG.info(count + " data read: " + numBytesRead);
+                 
+//             CalculateFFT fft = new CalculateFFT();
+//             soundFFTData.setData(fft.calculateFFT(data));
+             
 //             for ( int i=0; i<numBytesRead; i++) {
 //                 System.out.print(data[i]+",");
 //             }
-             
              if (soundRawData != null) {
                  soundRawData.setData(data);
              }

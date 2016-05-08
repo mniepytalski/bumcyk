@@ -9,7 +9,7 @@ public class Launcher {
     public static void main(String[] args) {
         ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
         EarService service = context.getBean(EarService.class);
-        service.startHearing();                
+        service.startHearing();
         System.exit(0);
     }
 }

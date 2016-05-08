@@ -11,10 +11,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JSlider;
 import javax.swing.Timer;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,6 +25,9 @@ public class Display {
 
     @Autowired
     private SoundRawData soundRawData;
+    
+    @Autowired
+    private SoundFFTData soundFFTData;
 
     public Display() {
     }
@@ -59,6 +59,7 @@ public class Display {
             }
 
             protected void paintComponent(Graphics g) {
+//                paintFftFrameDiagram(g, this);
                 paintTimeFrameDiagram(g, this);
             }
         });
@@ -75,7 +76,6 @@ public class Display {
         g2d.setPaint(Color.BLACK);
 
         double scaleY = 0.1;
-//        double scaleX = 0.1;
         int middleY = component.getHeight() / 2;
 
         if (soundRawData != null) {
@@ -91,4 +91,29 @@ public class Display {
             }
         }
     }
+
+    void paintFftFrameDiagram(Graphics g, JComponent component) {
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setStroke(new BasicStroke(1f));
+        g2d.setPaint(Color.BLACK);
+
+        double scaleY = 10;
+//        double scaleX = 0.1;
+        int middleY = component.getHeight() / 2;
+
+        if (soundFFTData != null) {
+            double data[] = soundFFTData.getData();
+            if (data != null) {
+                int printSizeX = component.getWidth();
+                if (printSizeX >= data.length) {
+                    printSizeX = data.length - 1;
+                }
+                for (int x = 0; x < printSizeX; x++) {
+                    g2d.drawLine(x, middleY + (int)((data[x]) * scaleY), x + 1, middleY + (int)((data[x+1]) * scaleY));
+                }
+            }
+        }
+    }
+    
 }
