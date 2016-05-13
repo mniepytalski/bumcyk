@@ -59,7 +59,7 @@ public class Display {
             }
 
             protected void paintComponent(Graphics g) {
-//                paintFftFrameDiagram(g, this);
+                paintFftFrameDiagram(g, this);
                 paintTimeFrameDiagram(g, this);
             }
         });
@@ -75,9 +75,7 @@ public class Display {
         g2d.setStroke(new BasicStroke(1f));
         g2d.setPaint(Color.BLACK);
 
-        double scaleY = 0.1;
         int middleY = component.getHeight() / 2;
-
         if (soundRawData != null) {
             byte data[] = soundRawData.getData();
             if (data != null) {
@@ -86,7 +84,7 @@ public class Display {
                     printSizeX = data.length - 1;
                 }
                 for (int x = 0; x < printSizeX; x++) {
-                    g2d.drawLine(x, middleY + (int)((data[x]) * scaleY), x + 1, middleY + (int)((data[x+1]) * scaleY));
+                    g2d.drawLine(x, middleY + conv2int(data, x) / 3, x + 1, middleY + conv2int(data, x+1) / 3);
                 }
             }
         }
@@ -96,9 +94,9 @@ public class Display {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setStroke(new BasicStroke(1f));
-        g2d.setPaint(Color.BLACK);
+        g2d.setPaint(Color.GRAY);
 
-        double scaleY = 10;
+        double scaleY = 2;
 //        double scaleX = 0.1;
         int middleY = component.getHeight() / 2;
 
@@ -114,6 +112,12 @@ public class Display {
                 }
             }
         }
+    }
+    
+    int conv2int(byte[] data, int index) {
+//        int ret = data[index<<1 + 1]&0xFF + (data[index<<1])<<8;
+      int ret = data[index];
+        return ret;
     }
     
 }

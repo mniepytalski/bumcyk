@@ -4,6 +4,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
 import org.slf4j.Logger;
@@ -20,84 +21,88 @@ public class SoundCapture {
 
     @Autowired
     private SoundRawData soundRawData;
-    
+
     @Autowired
-    private SoundFFTData soundFFTData;    
-    
+    private SoundFFTData soundFFTData;
+
     boolean stopped;
+
+    boolean running;
     
     public SoundCapture() {
         stopped = false;
     }
-    
+
     AudioFormat getFormat() {
-        float sampleRate = 8000;
-        int sampleSizeInBits = 8;
+//        float sampleRate = 8000;
+//        int sampleSizeInBits = 16;
+//        int channels = 1;
+//        boolean signed = true;
+//        boolean bigEndian = true;
+//        AudioFormat format = new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
+//        return format;
+        
+        
+        AudioFormat.Encoding encoding = AudioFormat.Encoding.PCM_SIGNED;
+        float rate = 8000.0f;
         int channels = 1;
-        boolean signed = true;
+        int sampleSize = 8;
         boolean bigEndian = true;
-        AudioFormat format = new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian); 
+        AudioFormat format = new AudioFormat(encoding, rate, sampleSize, channels, (sampleSize / 8) * channels, rate, bigEndian);
         return format;
     }
-    
+
     public void capture() {
-        
-        AudioFormat format = getFormat();
-        
-        TargetDataLine line = null;
-        DataLine.Info info = new DataLine.Info(TargetDataLine.class, format); // format is an AudioFormat object
-        if (!AudioSystem.isLineSupported(info)) {
-            // Handle the error ... 
-            LOG.error("line isn't supported");
-        }
-        // Obtain and open the line.
+
         try {
-            line = (TargetDataLine) AudioSystem.getLine(info);
+
+            final AudioFormat format = getFormat();
+            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+            final TargetDataLine line = (TargetDataLine)AudioSystem.getLine(info);
             line.open(format);
+            line.start();
+
+            
+            
+            
+            Runnable runner = new Runnable() {
+                
+                public void run() {
+                    
+                    boolean stopped = false;
+                    int count = 0;
+
+                    int numBytesRead;
+                    int bufferSize = (int) format.getSampleRate() * format.getFrameSize();
+                    byte[] data = new byte[bufferSize];
+
+                    while (!stopped) {
+                        
+                        numBytesRead = line.read(data, 0, data.length);
+                        if (numBytesRead < 0) {
+                            LOG.error("numBytesRead < 0");
+                            break;
+                        }
+                        soundRawData.setData(data);
+                        CalculateFFT fft = new CalculateFFT();
+                        soundFFTData.setData(fft.calculateFFT(data));
+                        if (++count > 1000) {
+                            break;
+                        }
+                    }
+                }
+            };
+            
+            // launch
+//
+            runner.run();
+//            Thread captureThread = new Thread(runner);
+//            captureThread.start();
+          
         } catch (LineUnavailableException ex) {
             LOG.error(ex.getMessage());
-        } 
-        
-        // Assume that the TargetDataLine, line, has already
-        // been obtained and opened.
-//        ByteArrayOutputStream out  = new ByteArrayOutputStream();
-         int numBytesRead;
-         byte[] data = new byte[line.getBufferSize() / 5];
+        }
 
-         // Begin audio capture.
-         line.start();
-
-         boolean stopped = false;
-
-         int count = 0;
-         // Here, stopped is a global boolean set by another thread.
-         while (!stopped) {
-             // Read the next chunk of data from the TargetDataLine.
-             numBytesRead =  line.read(data, 0, data.length);
-            // Save this chunk of data.
-//            out.write(data, 0, numBytesRead);
-  
-//             LOG.info(count + " data read: " + numBytesRead);
-                 
-//             CalculateFFT fft = new CalculateFFT();
-//             soundFFTData.setData(fft.calculateFFT(data));
-             
-//             for ( int i=0; i<numBytesRead; i++) {
-//                 System.out.print(data[i]+",");
-//             }
-             if (soundRawData != null) {
-                 soundRawData.setData(data);
-             }
-             
-             count++;
-             if (count > 1000) {
-                 break;
-             }
-            
-         }
-        
-        
     }
-    
-    
+
 }
