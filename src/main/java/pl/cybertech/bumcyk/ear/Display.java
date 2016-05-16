@@ -73,7 +73,7 @@ public class Display {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setStroke(new BasicStroke(1f));
-        g2d.setPaint(Color.BLACK);
+        g2d.setPaint(Color.GREEN);
 
         int middleY = component.getHeight() / 2;
         if (soundRawData != null) {
@@ -84,7 +84,7 @@ public class Display {
                     printSizeX = data.length - 1;
                 }
                 for (int x = 0; x < printSizeX; x++) {
-                    g2d.drawLine(x, middleY + conv2int(data, x) / 3, x + 1, middleY + conv2int(data, x+1) / 3);
+                    g2d.drawLine(x, middleY - conv2int(data, x) / 3, x + 1, middleY - conv2int(data, x+1) / 3);
                 }
             }
         }
@@ -94,7 +94,7 @@ public class Display {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setStroke(new BasicStroke(1f));
-        g2d.setPaint(Color.GRAY);
+        g2d.setPaint(Color.RED);
 
         double scaleY = 2;
 //        double scaleX = 0.1;
