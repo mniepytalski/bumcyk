@@ -1,1 +1,13 @@
-/target/
+.DS_STORE
+.idea
+*.iml
+*.class
+target/
+*~
+
+# Eclipse
+.settings/
+.project
+.classpath
+*.log
+*/log
