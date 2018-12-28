@@ -3,7 +3,7 @@ package pl.cybertech.bumcyk.ear;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SoundFFTData {
+public class SoundFFTData extends SoundData {
 
     double[] data;
 

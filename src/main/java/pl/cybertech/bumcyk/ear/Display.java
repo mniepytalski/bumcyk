@@ -1,13 +1,11 @@
 package pl.cybertech.bumcyk.ear;
 
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -15,6 +13,12 @@ import javax.swing.Timer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import pl.cybertech.bumcyk.ear.diagrams.Diagram;
+import pl.cybertech.bumcyk.ear.diagrams.Diagrams;
+import pl.cybertech.bumcyk.ear.diagrams.LinearFftFrameDiagram;
+import pl.cybertech.bumcyk.ear.diagrams.LinearTimeFrameDiagram;
+import pl.cybertech.bumcyk.ear.diagrams.PatternFftFrameDiagram;
 
 @Component
 public class Display {
@@ -28,15 +32,21 @@ public class Display {
     
     @Autowired
     private SoundFFTData soundFFTData;
+    
+    Map<Diagrams, Diagram> diagrams = new HashMap<Diagrams, Diagram>();
 
     public Display() {
+    	diagrams.put(Diagrams.LINEAR_TIME_FRAME, new LinearTimeFrameDiagram());
+    	diagrams.put(Diagrams.LINEAR_FFT_FRAME, new LinearFftFrameDiagram());
+    	diagrams.put(Diagrams.PATTERN_FFT_FRAME, new PatternFftFrameDiagram());
     }
     
     public void show() {
 
         JFrame frame = new JFrame();
         frame.setLayout(new BorderLayout());
-
+        frame.setTitle("Ucho");
+        
         frame.add(new JComponent() {
 
             private static final long serialVersionUID = 1L;
@@ -59,65 +69,17 @@ public class Display {
             }
 
             protected void paintComponent(Graphics g) {
-                paintFftFrameDiagram(g, this);
-                paintTimeFrameDiagram(g, this);
+            	super.paintComponent(g);
+                diagrams.get(Diagrams.LINEAR_FFT_FRAME).print(g, this, soundFFTData);
+//                diagrams.get(Diagrams.PATTERN_FFT_FRAME).print(g, this, soundFFTData);
+                diagrams.get(Diagrams.LINEAR_TIME_FRAME).print(g, this, soundRawData);
+                
             }
         });
 
         frame.setSize(500, 500);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-    }
-    
-    void paintTimeFrameDiagram(Graphics g, JComponent component) {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setStroke(new BasicStroke(1f));
-        g2d.setPaint(Color.GREEN);
-
-        int middleY = component.getHeight() / 2;
-        if (soundRawData != null) {
-            byte data[] = soundRawData.getData();
-            if (data != null) {
-                int printSizeX = component.getWidth();
-                if (printSizeX >= data.length) {
-                    printSizeX = data.length - 1;
-                }
-                for (int x = 0; x < printSizeX; x++) {
-                    g2d.drawLine(x, middleY - conv2int(data, x) / 3, x + 1, middleY - conv2int(data, x+1) / 3);
-                }
-            }
-        }
-    }
-
-    void paintFftFrameDiagram(Graphics g, JComponent component) {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setStroke(new BasicStroke(1f));
-        g2d.setPaint(Color.RED);
-
-        double scaleY = 2;
-//        double scaleX = 0.1;
-        int middleY = component.getHeight() / 2;
-
-        if (soundFFTData != null) {
-            double data[] = soundFFTData.getData();
-            if (data != null) {
-                int printSizeX = component.getWidth();
-                if (printSizeX >= data.length) {
-                    printSizeX = data.length - 1;
-                }
-                for (int x = 0; x < printSizeX; x++) {
-                    g2d.drawLine(x, middleY + (int)((data[x]) * scaleY), x + 1, middleY + (int)((data[x+1]) * scaleY));
-                }
-            }
-        }
-    }
-    
-    int conv2int(byte[] data, int index) {
-//        int ret = data[index<<1 + 1]&0xFF + (data[index<<1])<<8;
-      int ret = data[index];
-        return ret;
-    }
+    }    
     
 }

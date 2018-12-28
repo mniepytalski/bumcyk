@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import pl.cybertech.bumcyk.ear.signal.CalculateFFT;
+import pl.cybertech.diagnosis.ExecutionBlock;
 
 @Component
 public class SoundCapture {
@@ -84,11 +85,28 @@ public class SoundCapture {
                             break;
                         }
                         soundRawData.setData(data);
+                        
+                        //////////////////////////
+                        // basic processings
+                        
+                        // fft
+                        ExecutionBlock test1 = new ExecutionBlock();
                         CalculateFFT fft = new CalculateFFT();
                         soundFFTData.setData(fft.calculateFFT(data));
+                        LOG.info("fft time: "+test1.end());
                         if (++count > 1000) {
                             break;
                         }
+                        
+                        // cepstrum
+                        
+                        //////////////////////////
+                        // medium processing 
+                        
+                        // formant analize
+                        
+                        
+                        
                     }
                 }
             };
